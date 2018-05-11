@@ -1,16 +1,35 @@
 package com.job.card.management.system.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.job.card.management.system.dto.OperatorDto;
+import com.job.card.management.system.service.OperatorRegistrationService;
 
 @Controller
 public class UserRegistrationController {
+	
+	@Autowired
+	private OperatorRegistrationService userRegistrationService;
+	
+	
+	 @InitBinder
+	    public void initBinder(WebDataBinder binder) {
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	        dateFormat.setLenient(false);
+	        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+	    }
 
 	@RequestMapping("/")
 	public String indexPage(){
@@ -27,10 +46,12 @@ public class UserRegistrationController {
  	public String operatorRegistered(ModelMap modelMap,@ModelAttribute("operatorDto") OperatorDto dto,BindingResult result){
 		String viewName="show-operator-info";
 		System.out.println("\n\n\n This is .............");
-		if(result.hasErrors())
+	
+		userRegistrationService.operatorRegistration(dto);
+		/*	if(result.hasErrors())
 		{
 			viewName="operator-registration-form";
-		}
+		}*/
 		modelMap.addAttribute("operatorInfo", dto);
 		return viewName;
 	}
